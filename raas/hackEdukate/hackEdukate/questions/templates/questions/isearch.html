@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}Interenet Search{% endblock %}
+
+{% block head %}
+  <link href="{{ STATIC_URL }}css/search.css" rel="stylesheet">
+{% endblock head %}
+
+<!-- {% block body_block %} -->
+{% block main %}
+<div class="page-header">
+    <h1>Internet Search using RAAS</h1>
+    <br/>
+
+    <div class="container-fluid">
+        <form class="form-signin span8" id="user_form" method="post" action="/questions/isearch/">
+            {% csrf_token %}
+            <!-- Display the search form elements here -->
+            <input type="text" size="50" name="query" value="" id="query" />
+            <input class="btn btn-primary" type="submit" name="submit" value="Search" />
+            <br />
+        </form>
+
+        {% if result_list %}
+        <!-- Display search results in an ordered list -->
+        <div style="clear: both;">
+            <ol>
+            {% for result in result_list %}
+                <li>
+                    <strong><a href="{{ result.link }}">{{ result.title }}</a></strong><br />
+                    <em>{{ result.summary }}</em>
+
+
+                    <iframe  class  = "hyperlinkframe" src="{{ result.link }}" width="800" height="700" frameBorder="0"  style =
+                 "overflow:hidden;" scrolling="no" ">
+                </li>
+            {% endfor %}
+            </ol>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock main %}
+<!-- {% endblock %} -->
