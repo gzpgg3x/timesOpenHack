@@ -1,9 +1,11 @@
 import json
 import urllib, urllib2
+from nytimesarticle import articleAPI
+api = articleAPI('00cc3abde644a36b3e10a27189ae1a45%3A11%3A70234304')
 
 def run_query(search_terms):
     # Specify the base
-    root_url = 'https://api.datamarket.azure.com/Bing/Search/'
+    root_url = 'http://api.nytimes.com/svc/search/v2/articlesearch.json'
     source = 'Web'
 
     # Specify how many results we wish to be returned per page.
@@ -19,11 +21,8 @@ def run_query(search_terms):
 
     # Construct the latter part of our request's URL.
     # Sets the format of the response to JSON and sets other properties.
-    search_url = "{0}{1}?$format=json&$top={2}&$skip={3}&Query={4}".format(
+    search_url = "{0}q={1}&api-key=00cc3abde644a36b3e10a27189ae1a45%3A11%3A70234304".format(
         root_url,
-        source,
-        results_per_page,
-        offset,
         query)
 
     # Setup authentication with the Bing servers.
@@ -40,22 +39,20 @@ def run_query(search_terms):
 
     try:
         # Prepare for connecting to Bing's servers.
-        handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-        opener = urllib2.build_opener(handler)
-        urllib2.install_opener(opener)
-
-        # Connect to the server and read the response generated.
-        response = urllib2.urlopen(search_url).read()
+        articles = api.search( q = query , page=1)
 
         # Convert the string response to a Python dictionary object.
-        json_response = json.loads(response)
-
+        json_response = articles
+        print ("articles")
+        print(json_response)
         # Loop through each page returned, populating out results list.
-        for result in json_response['d']['results']:
+        for result in json_response['response']['docs']:
+            print(result)
+            print(result['web_url'])
             results.append({
-                'title': result['Title'],
-                'link': result['Url'],
-                'summary': result['Description']})
+                'title': result['snippet'],
+                'link': result['web_url'],
+                'summary': ''})
 
     # Catch a URLError exception - something went wrong when connecting!
     except urllib2.URLError, e:
